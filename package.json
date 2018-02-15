@@ -1,0 +1,16 @@
+{
+  "name": "google-places",
+  "version": "1.0.0",
+  "description": "Server calls to Google Place API",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Clara Andrew-Wani",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "node-fetch": "^2.0.0"
+  }
+}
