@@ -6,6 +6,7 @@ const config = require('./config');
 
 const server = express();
 const PORT = config.port;
+const STATUS_ERROR = 422;
 const Key = config.gmaps.apiKey;
 server.use(bodyParser.json());
 
@@ -24,13 +25,29 @@ let shortResults = () => {
   })
 }
 
-fetch(searchURL)
-  .then(res => res.json())
-  .then(json => results = json.results)
 
 server.get('/places', (req, res) => {
-  shortResults();
-  res.json(results);
+  const query = req.query.search;
+  const searchURL = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${query}&key=${Key}`
+
+  fetch(searchURL)
+  .then(res => res.json())
+  .then(json => {
+    results = json.results
+    results = results.map(result => {
+      return {
+        name: result.name,
+        place_id: result.place_id,
+        types: result.types
+      }
+    })
+  })
+  .then(json => res.json(results))
+  .catch(err => {
+    console.log(err);
+    res.status(STATUS_ERROR);
+    res.send('There seems to be an error with your API call request.')
+  })
 });
 
 server.get('/place', (req, res) => {
@@ -44,7 +61,12 @@ server.get('/place', (req, res) => {
     phoneNumber: json.result.formatted_phone_number,
     rating: json.result.rating,
     types: json.result.types
-  }));
+  }))
+  .catch(err => {
+    console.log(err);
+    res.status(STATUS_ERROR);
+    res.send('There seems to be an error with your API call request.')
+  })
 });
 
 
